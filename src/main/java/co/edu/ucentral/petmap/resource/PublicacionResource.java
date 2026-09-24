@@ -1,6 +1,7 @@
 package co.edu.ucentral.petmap.resource;
 
-import co.edu.ucentral.petmap.dto.publicacion.PublicacionEncontradaDTO;
+import co.edu.ucentral.petmap.dto.PublicacionEncontradaDTO;
+import co.edu.ucentral.petmap.dto.PublicacionPerdidaDTO;
 import co.edu.ucentral.petmap.entity.Publicacion;
 import co.edu.ucentral.petmap.service.PublicacionService;
 import jakarta.inject.Inject;
@@ -21,6 +22,13 @@ public class PublicacionResource {
     @Path("/encontrada")
     public Response crearEncontrada(@Valid PublicacionEncontradaDTO dto) {
         Publicacion pub = publicacionService.crearEncontrada(dto);
+        return Response.status(Response.Status.CREATED).entity(pub).build();
+    }
+
+    @POST
+    @Path("/perdida")
+    public Response crearPerdida(@Valid PublicacionPerdidaDTO dto) {
+        Publicacion pub = publicacionService.crearPerdida(dto);
         return Response.status(Response.Status.CREATED).entity(pub).build();
     }
 }
