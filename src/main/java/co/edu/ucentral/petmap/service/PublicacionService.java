@@ -7,6 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
+import java.time.LocalDateTime;
+import co.edu.ucentral.petmap.dto.PublicacionEliminarDTO;
 
 @ApplicationScoped
 public class PublicacionService {
@@ -35,4 +37,24 @@ public class PublicacionService {
         publicacionRepository.persist(pub);
         return pub;
     }
+
+    @Transactional
+public void eliminar(Long publicacionId, PublicacionEliminarDTO dto) {
+    Publicacion publicacion = publicacionRepository.findById(publicacionId);
+    if (publicacion == null) {
+        throw new WebApplicationException("Publicación no encontrada", 404);
+    }
+
+    if (publicacion.autor == null || !publicacion.autor.id.equals(dto.autorId)) {
+        throw new WebApplicationException("Solo el autor puede eliminar esta publicación", 403);
+    }
+
+    if (Boolean.TRUE.equals(publicacion.eliminada)) {
+        throw new WebApplicationException("La publicación ya fue eliminada", 409);
+    }
+
+    publicacion.eliminada = true;
+    publicacion.motivoEliminacion = dto.motivo;
+    publicacion.fechaEliminacion = LocalDateTime.now();
+}
 }

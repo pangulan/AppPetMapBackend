@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.PathParam;
+import co.edu.ucentral.petmap.dto.PublicacionEliminarDTO;
 
 @Path("/api/publicaciones")
 @Produces(MediaType.APPLICATION_JSON)
@@ -22,5 +24,12 @@ public class PublicacionResource {
     public Response crearEncontrada(@Valid PublicacionEncontradaDTO dto) {
         Publicacion pub = publicacionService.crearEncontrada(dto);
         return Response.status(Response.Status.CREATED).entity(pub).build();
+    }
+
+    @POST
+    @Path("/{id}/eliminar")
+    public Response eliminar(@PathParam("id") Long id, @Valid PublicacionEliminarDTO dto) {
+        publicacionService.eliminar(id, dto);
+        return Response.noContent().build();
     }
 }
