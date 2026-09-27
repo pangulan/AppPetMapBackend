@@ -38,4 +38,10 @@ public class Publicacion extends PanacheEntity {
     @ManyToOne
     @JoinColumn(name = "autor_id")
     public Usuario autor;
+
+    public Boolean eliminada = false;
+
+    public String motivoEliminacion;
+
+    public LocalDateTime fechaEliminacion;
 }
