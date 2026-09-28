@@ -1,6 +1,7 @@
 package co.edu.ucentral.petmap.resource;
 
 import co.edu.ucentral.petmap.dto.PublicacionEditarDTO;
+import co.edu.ucentral.petmap.dto.PublicacionResueltaDTO;
 import co.edu.ucentral.petmap.dto.publicacion.PublicacionEncontradaDTO;
 import co.edu.ucentral.petmap.entity.Publicacion;
 import co.edu.ucentral.petmap.service.PublicacionService;
@@ -42,5 +43,12 @@ public class PublicacionResource {
         Publicacion pub = publicacionService.editarPublicacion(id, dto);
         return Response.ok(pub).build();
 
+    }
+
+    @PUT
+    @Path("/{id}/resuelta")
+    public Response marcarResuelta(@PathParam("id") Long id, PublicacionResueltaDTO dto) {
+        Publicacion pub = publicacionService.marcarResuelta(id, dto);
+        return Response.ok(pub).build();
     }
 }
