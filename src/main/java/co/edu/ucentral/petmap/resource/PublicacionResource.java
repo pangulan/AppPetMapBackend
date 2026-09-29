@@ -1,17 +1,16 @@
 package co.edu.ucentral.petmap.resource;
 
 import co.edu.ucentral.petmap.dto.PublicacionEditarDTO;
-import co.edu.ucentral.petmap.dto.publicacion.PublicacionEncontradaDTO;
+import co.edu.ucentral.petmap.dto.PublicacionEncontradaDTO;
+import co.edu.ucentral.petmap.dto.PublicacionPerdidaDTO;
+import co.edu.ucentral.petmap.dto.PublicacionEliminarDTO;
 import co.edu.ucentral.petmap.entity.Publicacion;
 import co.edu.ucentral.petmap.service.PublicacionService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.PathParam;
-import co.edu.ucentral.petmap.dto.PublicacionEliminarDTO;
 
 @Path("/api/publicaciones")
 @Produces(MediaType.APPLICATION_JSON)
@@ -29,6 +28,13 @@ public class PublicacionResource {
     }
 
     @POST
+    @Path("/perdida")
+    public Response crearPerdida(@Valid PublicacionPerdidaDTO dto) {
+        Publicacion pub = publicacionService.crearPerdida(dto);
+        return Response.status(Response.Status.CREATED).entity(pub).build();
+    }
+
+    @POST
     @Path("/{id}/eliminar")
     public Response eliminar(@PathParam("id") Long id, @Valid PublicacionEliminarDTO dto) {
         publicacionService.eliminar(id, dto);
@@ -37,10 +43,8 @@ public class PublicacionResource {
 
     @PUT
     @Path("/{id}")
-    public Response editar(@PathParam("id") Long id, PublicacionEditarDTO dto)
-    {
+    public Response editar(@PathParam("id") Long id, PublicacionEditarDTO dto) {
         Publicacion pub = publicacionService.editarPublicacion(id, dto);
         return Response.ok(pub).build();
-
     }
 }

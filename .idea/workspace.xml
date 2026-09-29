@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="56799a5e-d22b-47e7-8914-5093e86726e9" name="Changes" comment="" />
+    <list default="true" id="ff7a9292-615e-47b2-83c0-f283b00679d8" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -47,7 +47,6 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "sprint1/hu005-publicacion-perdida",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/Mis archivos/Downloads/petmap-backend/petmap-backend",
     "node.js.detected.package.eslint": "true",
@@ -106,6 +105,23 @@
     <option featureType="dependencySupport" implementationName="java:io.smallrye.reactive:mutiny" />
     <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
     <option featureType="dependencySupport" implementationName="java:jakarta.ws.rs:jakarta.ws.rs-api" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-field">
+          <url>file://$PROJECT_DIR$/src/main/java/co/edu/ucentral/petmap/dto/PublicacionEncontradaDTO.java</url>
+          <line>8</line>
+          <properties field="especie" class="co.edu.ucentral.petmap.dto.PublicacionEncontradaDTO" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/co/edu/ucentral/petmap/service/PublicacionService.java</url>
+          <line>31</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
