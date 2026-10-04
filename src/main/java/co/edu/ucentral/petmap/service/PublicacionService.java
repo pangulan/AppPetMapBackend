@@ -4,6 +4,7 @@ import co.edu.ucentral.petmap.dto.PublicacionEditarDTO;
 import co.edu.ucentral.petmap.dto.PublicacionEncontradaDTO;
 import co.edu.ucentral.petmap.dto.PublicacionPerdidaDTO;
 import co.edu.ucentral.petmap.dto.PublicacionEliminarDTO;
+import co.edu.ucentral.petmap.dto.PublicacionResueltaDTO;
 import co.edu.ucentral.petmap.entity.*;
 import co.edu.ucentral.petmap.repository.PublicacionRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -88,6 +89,22 @@ public class PublicacionService {
         if (dto.foto != null) pub.foto = dto.foto;
         if (dto.latitud != null) pub.latitud = dto.latitud;
         if (dto.longitud != null) pub.longitud = dto.longitud;
+        return pub;
+    }
+
+    @Transactional
+    public Publicacion marcarResuelta(Long id, PublicacionResueltaDTO dto) {
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null) {
+            throw new WebApplicationException("Publicacion no encontrada", 404);
+        }
+        if (pub.tipo != TipoPublicacion.PERDIDA) {
+            throw new WebApplicationException("Solo aplica a publicaciones de tipo PERDIDA", 409);
+        }
+        if (pub.autor == null || !pub.autor.id.equals(dto.autorId)) {
+            throw new WebApplicationException("Solo el autor puede marcar esta publicación como resuelta", 403);
+        }
+        pub.estado = EstadoPublicacion.RESUELTA;
         return pub;
     }
 }
