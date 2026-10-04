@@ -4,12 +4,12 @@ import co.edu.ucentral.petmap.dto.PublicacionEditarDTO;
 import co.edu.ucentral.petmap.dto.PublicacionEncontradaDTO;
 import co.edu.ucentral.petmap.dto.PublicacionPerdidaDTO;
 import co.edu.ucentral.petmap.dto.PublicacionEliminarDTO;
+import co.edu.ucentral.petmap.dto.PublicacionResueltaDTO;
 import co.edu.ucentral.petmap.entity.Publicacion;
 import co.edu.ucentral.petmap.service.PublicacionService;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -46,6 +46,13 @@ public class PublicacionResource {
     @Path("/{id}")
     public Response editar(@PathParam("id") Long id, PublicacionEditarDTO dto) {
         Publicacion pub = publicacionService.editarPublicacion(id, dto);
+        return Response.ok(pub).build();
+    }
+
+    @PUT
+    @Path("/{id}/resuelta")
+    public Response marcarResuelta(@PathParam("id") Long id, PublicacionResueltaDTO dto) {
+        Publicacion pub = publicacionService.marcarResuelta(id, dto);
         return Response.ok(pub).build();
     }
 }
