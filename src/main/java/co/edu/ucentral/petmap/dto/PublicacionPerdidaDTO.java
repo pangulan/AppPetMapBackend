@@ -4,14 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
-public class PublicacionEncontradaDTO {
+public class PublicacionPerdidaDTO {
     @NotBlank
     public String especie;
 
     @NotBlank
     public String descripcion;
 
-    @NotBlank(message = "La foto es obligatoria para publicaciones de mascota encontrada")
     public String foto;
 
     @NotNull
