@@ -19,6 +19,7 @@ public class Publicacion extends PanacheEntity {
     @NotBlank
     public String descripcion;
 
+    @Column(columnDefinition = "TEXT")
     public String foto;
 
     @NotNull
