@@ -19,6 +19,7 @@ public class Publicacion extends PanacheEntity {
     @NotBlank
     public String descripcion;
 
+    @Column(columnDefinition = "TEXT")
     public String foto;
 
     @NotNull
@@ -38,4 +39,10 @@ public class Publicacion extends PanacheEntity {
     @ManyToOne
     @JoinColumn(name = "autor_id")
     public Usuario autor;
+
+    public Boolean eliminada = false;
+
+    public String motivoEliminacion;
+
+    public LocalDateTime fechaEliminacion;
 }

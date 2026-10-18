@@ -1,6 +1,10 @@
 package co.edu.ucentral.petmap.resource;
 
-import co.edu.ucentral.petmap.dto.publicacion.PublicacionEncontradaDTO;
+import co.edu.ucentral.petmap.dto.PublicacionEditarDTO;
+import co.edu.ucentral.petmap.dto.PublicacionEncontradaDTO;
+import co.edu.ucentral.petmap.dto.PublicacionPerdidaDTO;
+import co.edu.ucentral.petmap.dto.PublicacionEliminarDTO;
+import co.edu.ucentral.petmap.dto.PublicacionResueltaDTO;
 import co.edu.ucentral.petmap.entity.Publicacion;
 import co.edu.ucentral.petmap.service.PublicacionService;
 import jakarta.inject.Inject;
@@ -22,5 +26,33 @@ public class PublicacionResource {
     public Response crearEncontrada(@Valid PublicacionEncontradaDTO dto) {
         Publicacion pub = publicacionService.crearEncontrada(dto);
         return Response.status(Response.Status.CREATED).entity(pub).build();
+    }
+
+    @POST
+    @Path("/perdida")
+    public Response crearPerdida(@Valid PublicacionPerdidaDTO dto) {
+        Publicacion pub = publicacionService.crearPerdida(dto);
+        return Response.status(Response.Status.CREATED).entity(pub).build();
+    }
+
+    @POST
+    @Path("/{id}/eliminar")
+    public Response eliminar(@PathParam("id") Long id, @Valid PublicacionEliminarDTO dto) {
+        publicacionService.eliminar(id, dto);
+        return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    public Response editar(@PathParam("id") Long id, PublicacionEditarDTO dto) {
+        Publicacion pub = publicacionService.editarPublicacion(id, dto);
+        return Response.ok(pub).build();
+    }
+
+    @PUT
+    @Path("/{id}/resuelta")
+    public Response marcarResuelta(@PathParam("id") Long id, PublicacionResueltaDTO dto) {
+        Publicacion pub = publicacionService.marcarResuelta(id, dto);
+        return Response.ok(pub).build();
     }
 }

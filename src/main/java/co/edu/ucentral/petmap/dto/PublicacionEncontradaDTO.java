@@ -1,4 +1,4 @@
-package co.edu.ucentral.petmap.dto.publicacion;
+package co.edu.ucentral.petmap.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
