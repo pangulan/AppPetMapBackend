@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.List;
+import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
 
 @Path("/api/publicaciones")
 @Produces(MediaType.APPLICATION_JSON)
@@ -54,5 +56,13 @@ public class PublicacionResource {
     public Response marcarResuelta(@PathParam("id") Long id, PublicacionResueltaDTO dto) {
         Publicacion pub = publicacionService.marcarResuelta(id, dto);
         return Response.ok(pub).build();
+    }
+        @GET
+    @Path("/mias")
+    public List<PublicacionResumenDTO> misPublicaciones(@QueryParam("autorId") Long autorId) {
+        if (autorId == null) {
+            throw new BadRequestException("autorId es obligatorio");
+        }
+        return publicacionService.listarPorAutor(autorId);
     }
 }

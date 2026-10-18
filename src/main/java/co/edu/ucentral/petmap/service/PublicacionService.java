@@ -12,6 +12,8 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
 import java.time.LocalDateTime;
+import java.util.List;
+import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
 
 @ApplicationScoped
 public class PublicacionService {
@@ -106,5 +108,13 @@ public class PublicacionService {
         }
         pub.estado = EstadoPublicacion.RESUELTA;
         return pub;
+    }
+        public List<PublicacionResumenDTO> listarPorAutor(Long autorId) {
+        return publicacionRepository
+                .list("autor.id = ?1 and (eliminada is null or eliminada = false) order by id desc",
+                        autorId)
+                .stream()
+                .map(PublicacionResumenDTO::desde)
+                .toList();
     }
 }
