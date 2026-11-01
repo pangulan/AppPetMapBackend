@@ -45,4 +45,6 @@ public class Publicacion extends PanacheEntity {
     public String motivoEliminacion;
 
     public LocalDateTime fechaEliminacion;
+
+    public String motivoRechazo;
 }
