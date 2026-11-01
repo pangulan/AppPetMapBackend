@@ -14,6 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
+import co.edu.ucentral.petmap.dto.PublicacionCerradaDTO;
 
 @Path("/api/publicaciones")
 @Produces(MediaType.APPLICATION_JSON)
@@ -64,5 +65,12 @@ public class PublicacionResource {
             throw new BadRequestException("autorId es obligatorio");
         }
         return publicacionService.listarPorAutor(autorId);
+    }
+
+        @PUT
+    @Path("/{id}/cerrada")
+    public Response marcarCerrada(@PathParam("id") Long id, @Valid PublicacionCerradaDTO dto) {
+        publicacionService.marcarCerrada(id, dto);
+        return Response.noContent().build();
     }
 }
