@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
-
+import co.edu.ucentral.petmap.dto.PublicacionModeracionDTO;
 @Path("/api/publicaciones")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -64,5 +64,27 @@ public class PublicacionResource {
             throw new BadRequestException("autorId es obligatorio");
         }
         return publicacionService.listarPorAutor(autorId);
+
+
+    }
+
+    @PUT
+    @Path("/{id}/aprobar")
+    public Response aprobar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
+        Publicacion pub = publicacionService.aprobar(id, dto);
+        return Response.ok(pub).build();
+    }
+
+    @PUT
+    @Path("/{id}/rechazar")
+    public Response rechazar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
+        Publicacion pub = publicacionService.rechazar(id, dto);
+        return Response.ok(pub).build();
+    }
+
+    @GET
+    @Path("/pendientes")
+    public Response pendientes() {
+        return Response.ok(publicacionService.listarPendientes()).build();
     }
 }
