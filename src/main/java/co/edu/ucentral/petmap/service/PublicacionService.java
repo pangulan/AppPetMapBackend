@@ -14,6 +14,8 @@ import jakarta.ws.rs.WebApplicationException;
 import java.time.LocalDateTime;
 import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
+import co.edu.ucentral.petmap.dto.PublicacionCerradaDTO;
+
 
 @ApplicationScoped
 public class PublicacionService {
@@ -116,5 +118,23 @@ public class PublicacionService {
                 .stream()
                 .map(PublicacionResumenDTO::desde)
                 .toList();
+    }
+
+        @Transactional
+    public void marcarCerrada(Long id, PublicacionCerradaDTO dto) {
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null || Boolean.TRUE.equals(pub.eliminada)) {
+            throw new WebApplicationException("Publicacion no encontrada", 404);
+        }
+        if (pub.tipo != TipoPublicacion.ENCONTRADA) {
+            throw new WebApplicationException("Solo aplica a publicaciones de tipo ENCONTRADA", 409);
+        }
+        if (pub.autor == null || !pub.autor.id.equals(dto.autorId)) {
+            throw new WebApplicationException("Solo el autor puede cerrar esta publicacion", 403);
+        }
+        if (pub.estado != EstadoPublicacion.PENDIENTE && pub.estado != EstadoPublicacion.APROBADA) {
+            throw new WebApplicationException("No se puede cerrar en este estado", 409);
+        }
+        pub.estado = EstadoPublicacion.CERRADA;
     }
 }
