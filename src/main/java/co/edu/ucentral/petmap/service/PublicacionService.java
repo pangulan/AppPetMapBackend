@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
 import co.edu.ucentral.petmap.dto.PublicacionCerradaDTO;
-
+import co.edu.ucentral.petmap.dto.PublicacionModeracionDTO;
 
 @ApplicationScoped
 public class PublicacionService {
@@ -111,7 +111,8 @@ public class PublicacionService {
         pub.estado = EstadoPublicacion.RESUELTA;
         return pub;
     }
-        public List<PublicacionResumenDTO> listarPorAutor(Long autorId) {
+
+    public List<PublicacionResumenDTO> listarPorAutor(Long autorId) {
         return publicacionRepository
                 .list("autor.id = ?1 and (eliminada is null or eliminada = false) order by id desc",
                         autorId)
@@ -120,7 +121,7 @@ public class PublicacionService {
                 .toList();
     }
 
-        @Transactional
+    @Transactional
     public void marcarCerrada(Long id, PublicacionCerradaDTO dto) {
         Publicacion pub = publicacionRepository.findById(id);
         if (pub == null || Boolean.TRUE.equals(pub.eliminada)) {
@@ -136,5 +137,56 @@ public class PublicacionService {
             throw new WebApplicationException("No se puede cerrar en este estado", 409);
         }
         pub.estado = EstadoPublicacion.CERRADA;
+    }
+
+    @Transactional
+    public Publicacion aprobar(Long id, PublicacionModeracionDTO dto) {
+        Publicacion pub = buscarPendiente(id, dto);
+        pub.estado = EstadoPublicacion.APROBADA;
+        return pub;
+    }
+
+    @Transactional
+    public Publicacion rechazar(Long id, PublicacionModeracionDTO dto) {
+        if (dto.motivo == null || dto.motivo.isBlank()) {
+            throw new WebApplicationException("El motivo del rechazo es obligatorio", 400);
+        }
+        Publicacion pub = buscarPendiente(id, dto);
+        pub.estado = EstadoPublicacion.RECHAZADA;
+        pub.motivoRechazo = dto.motivo;
+        return pub;
+    }
+
+    private Publicacion buscarPendiente(Long id, PublicacionModeracionDTO dto) {
+        Usuario moderador = Usuario.findById(dto.moderadorId);
+        if (moderador == null) {
+            throw new WebApplicationException("Moderador no encontrado", 404);
+        }
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null) {
+            throw new WebApplicationException("Publicacion no encontrada", 404);
+        }
+        if (pub.estado != EstadoPublicacion.PENDIENTE) {
+            throw new WebApplicationException("Solo se pueden moderar publicaciones pendientes", 409);
+        }
+        return pub;
+    }
+
+    public java.util.List<java.util.Map<String, Object>> listarPendientes() {
+        java.util.List<Publicacion> lista = publicacionRepository.list(
+                "estado = ?1 and (eliminada is null or eliminada = false) order by id",
+                EstadoPublicacion.PENDIENTE);
+        java.util.List<java.util.Map<String, Object>> resultado = new java.util.ArrayList<>();
+        for (Publicacion p : lista) {
+            java.util.Map<String, Object> item = new java.util.LinkedHashMap<>();
+            item.put("id", p.id);
+            item.put("tipo", p.tipo);
+            item.put("especie", p.especie);
+            item.put("descripcion", p.descripcion);
+            item.put("foto", p.foto);
+            item.put("estado", p.estado);
+            resultado.add(item);
+        }
+        return resultado;
     }
 }

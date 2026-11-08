@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
 import co.edu.ucentral.petmap.dto.PublicacionCerradaDTO;
+import co.edu.ucentral.petmap.dto.PublicacionModeracionDTO;
 
 @Path("/api/publicaciones")
 @Produces(MediaType.APPLICATION_JSON)
@@ -58,7 +59,8 @@ public class PublicacionResource {
         Publicacion pub = publicacionService.marcarResuelta(id, dto);
         return Response.ok(pub).build();
     }
-        @GET
+
+    @GET
     @Path("/mias")
     public List<PublicacionResumenDTO> misPublicaciones(@QueryParam("autorId") Long autorId) {
         if (autorId == null) {
@@ -67,7 +69,27 @@ public class PublicacionResource {
         return publicacionService.listarPorAutor(autorId);
     }
 
-        @PUT
+    @PUT
+    @Path("/{id}/aprobar")
+    public Response aprobar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
+        Publicacion pub = publicacionService.aprobar(id, dto);
+        return Response.ok(pub).build();
+    }
+
+    @PUT
+    @Path("/{id}/rechazar")
+    public Response rechazar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
+        Publicacion pub = publicacionService.rechazar(id, dto);
+        return Response.ok(pub).build();
+    }
+
+    @GET
+    @Path("/pendientes")
+    public Response pendientes() {
+        return Response.ok(publicacionService.listarPendientes()).build();
+    }
+
+    @PUT
     @Path("/{id}/cerrada")
     public Response marcarCerrada(@PathParam("id") Long id, @Valid PublicacionCerradaDTO dto) {
         publicacionService.marcarCerrada(id, dto);
