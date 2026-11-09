@@ -16,6 +16,7 @@ import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
 import co.edu.ucentral.petmap.dto.PublicacionCerradaDTO;
 import co.edu.ucentral.petmap.dto.PublicacionModeracionDTO;
+import jakarta.annotation.security.RolesAllowed;
 
 @Path("/api/publicaciones")
 @Produces(MediaType.APPLICATION_JSON)
@@ -71,6 +72,7 @@ public class PublicacionResource {
 
     @PUT
     @Path("/{id}/aprobar")
+    @RolesAllowed("ADMINISTRADOR")
     public Response aprobar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
         Publicacion pub = publicacionService.aprobar(id, dto);
         return Response.ok(pub).build();
@@ -78,6 +80,7 @@ public class PublicacionResource {
 
     @PUT
     @Path("/{id}/rechazar")
+    @RolesAllowed("ADMINISTRADOR")
     public Response rechazar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
         Publicacion pub = publicacionService.rechazar(id, dto);
         return Response.ok(pub).build();
@@ -85,6 +88,7 @@ public class PublicacionResource {
 
     @GET
     @Path("/pendientes")
+    @RolesAllowed("ADMINISTRADOR")
     public Response pendientes() {
         return Response.ok(publicacionService.listarPendientes()).build();
     }
