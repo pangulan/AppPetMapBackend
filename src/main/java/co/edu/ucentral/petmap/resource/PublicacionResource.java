@@ -113,4 +113,18 @@ public class PublicacionResource {
     public String foto(@PathParam("id") Long id) {
         return publicacionService.fotoDe(id);
     }
+        @GET
+    @Path("/resumen")
+    @RolesAllowed("ADMINISTRADOR")
+    public java.util.Map<String, Long> resumen() {
+        return publicacionService.resumen();
+    }
+
+    @PUT
+    @Path("/{id}/retirar")
+    @RolesAllowed("ADMINISTRADOR")
+    public Response retirar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
+        publicacionService.retirar(id, dto);
+        return Response.noContent().build();
+    }
 }

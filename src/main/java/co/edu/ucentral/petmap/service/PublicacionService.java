@@ -211,4 +211,41 @@ public class PublicacionService {
         }
         return pub.foto;
     }
+        @Transactional
+    public void retirar(Long id, PublicacionModeracionDTO dto) {
+        if (dto.motivo == null || dto.motivo.isBlank()) {
+            throw new WebApplicationException("El motivo del retiro es obligatorio", 400);
+        }
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null || Boolean.TRUE.equals(pub.eliminada)) {
+            throw new WebApplicationException("Publicacion no encontrada", 404);
+        }
+        if (pub.estado != EstadoPublicacion.APROBADA) {
+            throw new WebApplicationException("Solo se pueden retirar publicaciones aprobadas", 409);
+        }
+        pub.eliminada = true;
+        pub.motivoEliminacion = "Retirada por un administrador: " + dto.motivo;
+        pub.fechaEliminacion = LocalDateTime.now();
+    }
+
+    public java.util.Map<String, Long> resumen() {
+        String activa = "(eliminada is null or eliminada = false)";
+        java.util.Map<String, Long> r = new java.util.LinkedHashMap<>();
+        r.put("pendientes", publicacionRepository.count(
+                "estado = ?1 and " + activa, EstadoPublicacion.PENDIENTE));
+        r.put("aprobadas", publicacionRepository.count(
+                "estado = ?1 and " + activa, EstadoPublicacion.APROBADA));
+        r.put("perdidas", publicacionRepository.count(
+                "estado = ?1 and tipo = ?2 and " + activa,
+                EstadoPublicacion.APROBADA, TipoPublicacion.PERDIDA));
+        r.put("encontradas", publicacionRepository.count(
+                "estado = ?1 and tipo = ?2 and " + activa,
+                EstadoPublicacion.APROBADA, TipoPublicacion.ENCONTRADA));
+        r.put("rechazadas", publicacionRepository.count(
+                "estado = ?1 and " + activa, EstadoPublicacion.RECHAZADA));
+        r.put("resueltas", publicacionRepository.count(
+                "(estado = ?1 or estado = ?2) and " + activa,
+                EstadoPublicacion.RESUELTA, EstadoPublicacion.CERRADA));
+        return r;
+    }
 }
