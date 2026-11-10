@@ -16,6 +16,7 @@ import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
 import co.edu.ucentral.petmap.dto.PublicacionCerradaDTO;
 import co.edu.ucentral.petmap.dto.PublicacionModeracionDTO;
+import co.edu.ucentral.petmap.dto.PublicacionMapaDTO;
 import jakarta.annotation.security.RolesAllowed;
 
 @Path("/api/publicaciones")
@@ -98,5 +99,18 @@ public class PublicacionResource {
     public Response marcarCerrada(@PathParam("id") Long id, @Valid PublicacionCerradaDTO dto) {
         publicacionService.marcarCerrada(id, dto);
         return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/aprobadas")
+    public List<PublicacionMapaDTO> aprobadas() {
+        return publicacionService.listarAprobadas();
+    }
+
+    @GET
+    @Path("/{id}/foto")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String foto(@PathParam("id") Long id) {
+        return publicacionService.fotoDe(id);
     }
 }

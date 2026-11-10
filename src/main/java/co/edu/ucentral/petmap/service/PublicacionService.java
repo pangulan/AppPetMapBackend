@@ -16,6 +16,7 @@ import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
 import co.edu.ucentral.petmap.dto.PublicacionCerradaDTO;
 import co.edu.ucentral.petmap.dto.PublicacionModeracionDTO;
+import co.edu.ucentral.petmap.dto.PublicacionMapaDTO;
 
 @ApplicationScoped
 public class PublicacionService {
@@ -188,5 +189,26 @@ public class PublicacionService {
             resultado.add(item);
         }
         return resultado;
+    }
+
+    public List<PublicacionMapaDTO> listarAprobadas() {
+        return publicacionRepository
+                .list("estado = ?1 and (eliminada is null or eliminada = false) order by id desc",
+                        EstadoPublicacion.APROBADA)
+                .stream()
+                .map(PublicacionMapaDTO::desde)
+                .toList();
+    }
+
+    public String fotoDe(Long id) {
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null
+                || pub.estado != EstadoPublicacion.APROBADA
+                || Boolean.TRUE.equals(pub.eliminada)
+                || pub.foto == null
+                || pub.foto.isBlank()) {
+            throw new WebApplicationException("Foto no disponible", 404);
+        }
+        return pub.foto;
     }
 }
