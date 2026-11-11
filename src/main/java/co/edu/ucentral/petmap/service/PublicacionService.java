@@ -248,4 +248,20 @@ public class PublicacionService {
                 EstadoPublicacion.RESUELTA, EstadoPublicacion.CERRADA));
         return r;
     }
+
+        public java.util.Map<String, String> contactoDe(Long id) {
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null
+                || pub.estado != EstadoPublicacion.APROBADA
+                || Boolean.TRUE.equals(pub.eliminada)
+                || pub.autor == null) {
+            throw new WebApplicationException("Contacto no disponible", 404);
+        }
+        java.util.Map<String, String> contacto = new java.util.LinkedHashMap<>();
+        contacto.put("nombre", pub.autor.nombre);
+        contacto.put("telefono", pub.autor.telefono);
+        contacto.put("correo", pub.autor.correo);
+        return contacto;
+    }
+    
 }

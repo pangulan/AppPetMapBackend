@@ -12,6 +12,7 @@ public class PublicacionResumenDTO {
     public Double longitud;
     public String fecha;
     public String estado;
+    public String motivoRechazo;
 
     public static PublicacionResumenDTO desde(Publicacion p) {
         PublicacionResumenDTO dto = new PublicacionResumenDTO();
@@ -24,6 +25,7 @@ public class PublicacionResumenDTO {
         dto.longitud = p.longitud;
         dto.fecha = p.fecha != null ? p.fecha.toString() : null;
         dto.estado = p.estado != null ? p.estado.name() : null;
+        dto.motivoRechazo = p.motivoRechazo;
         return dto;
     }
 }

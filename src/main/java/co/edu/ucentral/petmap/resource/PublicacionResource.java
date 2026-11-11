@@ -127,4 +127,11 @@ public class PublicacionResource {
         publicacionService.retirar(id, dto);
         return Response.noContent().build();
     }
+
+        @GET
+    @Path("/{id}/contacto")
+    @RolesAllowed({"PUBLICADOR", "ADMINISTRADOR"})
+    public java.util.Map<String, String> contacto(@PathParam("id") Long id) {
+        return publicacionService.contactoDe(id);
+    }
 }
