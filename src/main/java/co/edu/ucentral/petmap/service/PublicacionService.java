@@ -14,7 +14,9 @@ import jakarta.ws.rs.WebApplicationException;
 import java.time.LocalDateTime;
 import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
+import co.edu.ucentral.petmap.dto.PublicacionCerradaDTO;
 import co.edu.ucentral.petmap.dto.PublicacionModeracionDTO;
+import co.edu.ucentral.petmap.dto.PublicacionMapaDTO;
 
 @ApplicationScoped
 public class PublicacionService {
@@ -110,7 +112,8 @@ public class PublicacionService {
         pub.estado = EstadoPublicacion.RESUELTA;
         return pub;
     }
-        public List<PublicacionResumenDTO> listarPorAutor(Long autorId) {
+
+    public List<PublicacionResumenDTO> listarPorAutor(Long autorId) {
         return publicacionRepository
                 .list("autor.id = ?1 and (eliminada is null or eliminada = false) order by id desc",
                         autorId)
@@ -118,6 +121,25 @@ public class PublicacionService {
                 .map(PublicacionResumenDTO::desde)
                 .toList();
     }
+
+    @Transactional
+    public void marcarCerrada(Long id, PublicacionCerradaDTO dto) {
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null || Boolean.TRUE.equals(pub.eliminada)) {
+            throw new WebApplicationException("Publicacion no encontrada", 404);
+        }
+        if (pub.tipo != TipoPublicacion.ENCONTRADA) {
+            throw new WebApplicationException("Solo aplica a publicaciones de tipo ENCONTRADA", 409);
+        }
+        if (pub.autor == null || !pub.autor.id.equals(dto.autorId)) {
+            throw new WebApplicationException("Solo el autor puede cerrar esta publicacion", 403);
+        }
+        if (pub.estado != EstadoPublicacion.PENDIENTE && pub.estado != EstadoPublicacion.APROBADA) {
+            throw new WebApplicationException("No se puede cerrar en este estado", 409);
+        }
+        pub.estado = EstadoPublicacion.CERRADA;
+    }
+
     @Transactional
     public Publicacion aprobar(Long id, PublicacionModeracionDTO dto) {
         Publicacion pub = buscarPendiente(id, dto);
@@ -168,4 +190,78 @@ public class PublicacionService {
         }
         return resultado;
     }
+
+    public List<PublicacionMapaDTO> listarAprobadas() {
+        return publicacionRepository
+                .list("estado = ?1 and (eliminada is null or eliminada = false) order by id desc",
+                        EstadoPublicacion.APROBADA)
+                .stream()
+                .map(PublicacionMapaDTO::desde)
+                .toList();
+    }
+
+    public String fotoDe(Long id) {
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null
+                || pub.estado != EstadoPublicacion.APROBADA
+                || Boolean.TRUE.equals(pub.eliminada)
+                || pub.foto == null
+                || pub.foto.isBlank()) {
+            throw new WebApplicationException("Foto no disponible", 404);
+        }
+        return pub.foto;
+    }
+        @Transactional
+    public void retirar(Long id, PublicacionModeracionDTO dto) {
+        if (dto.motivo == null || dto.motivo.isBlank()) {
+            throw new WebApplicationException("El motivo del retiro es obligatorio", 400);
+        }
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null || Boolean.TRUE.equals(pub.eliminada)) {
+            throw new WebApplicationException("Publicacion no encontrada", 404);
+        }
+        if (pub.estado != EstadoPublicacion.APROBADA) {
+            throw new WebApplicationException("Solo se pueden retirar publicaciones aprobadas", 409);
+        }
+        pub.eliminada = true;
+        pub.motivoEliminacion = "Retirada por un administrador: " + dto.motivo;
+        pub.fechaEliminacion = LocalDateTime.now();
+    }
+
+    public java.util.Map<String, Long> resumen() {
+        String activa = "(eliminada is null or eliminada = false)";
+        java.util.Map<String, Long> r = new java.util.LinkedHashMap<>();
+        r.put("pendientes", publicacionRepository.count(
+                "estado = ?1 and " + activa, EstadoPublicacion.PENDIENTE));
+        r.put("aprobadas", publicacionRepository.count(
+                "estado = ?1 and " + activa, EstadoPublicacion.APROBADA));
+        r.put("perdidas", publicacionRepository.count(
+                "estado = ?1 and tipo = ?2 and " + activa,
+                EstadoPublicacion.APROBADA, TipoPublicacion.PERDIDA));
+        r.put("encontradas", publicacionRepository.count(
+                "estado = ?1 and tipo = ?2 and " + activa,
+                EstadoPublicacion.APROBADA, TipoPublicacion.ENCONTRADA));
+        r.put("rechazadas", publicacionRepository.count(
+                "estado = ?1 and " + activa, EstadoPublicacion.RECHAZADA));
+        r.put("resueltas", publicacionRepository.count(
+                "(estado = ?1 or estado = ?2) and " + activa,
+                EstadoPublicacion.RESUELTA, EstadoPublicacion.CERRADA));
+        return r;
+    }
+
+        public java.util.Map<String, String> contactoDe(Long id) {
+        Publicacion pub = publicacionRepository.findById(id);
+        if (pub == null
+                || pub.estado != EstadoPublicacion.APROBADA
+                || Boolean.TRUE.equals(pub.eliminada)
+                || pub.autor == null) {
+            throw new WebApplicationException("Contacto no disponible", 404);
+        }
+        java.util.Map<String, String> contacto = new java.util.LinkedHashMap<>();
+        contacto.put("nombre", pub.autor.nombre);
+        contacto.put("telefono", pub.autor.telefono);
+        contacto.put("correo", pub.autor.correo);
+        return contacto;
+    }
+    
 }

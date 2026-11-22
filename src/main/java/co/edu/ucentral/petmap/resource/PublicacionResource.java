@@ -14,7 +14,11 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import co.edu.ucentral.petmap.dto.PublicacionResumenDTO;
+import co.edu.ucentral.petmap.dto.PublicacionCerradaDTO;
 import co.edu.ucentral.petmap.dto.PublicacionModeracionDTO;
+import co.edu.ucentral.petmap.dto.PublicacionMapaDTO;
+import jakarta.annotation.security.RolesAllowed;
+
 @Path("/api/publicaciones")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -57,19 +61,19 @@ public class PublicacionResource {
         Publicacion pub = publicacionService.marcarResuelta(id, dto);
         return Response.ok(pub).build();
     }
-        @GET
+
+    @GET
     @Path("/mias")
     public List<PublicacionResumenDTO> misPublicaciones(@QueryParam("autorId") Long autorId) {
         if (autorId == null) {
             throw new BadRequestException("autorId es obligatorio");
         }
         return publicacionService.listarPorAutor(autorId);
-
-
     }
 
     @PUT
     @Path("/{id}/aprobar")
+    @RolesAllowed("ADMINISTRADOR")
     public Response aprobar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
         Publicacion pub = publicacionService.aprobar(id, dto);
         return Response.ok(pub).build();
@@ -77,6 +81,7 @@ public class PublicacionResource {
 
     @PUT
     @Path("/{id}/rechazar")
+    @RolesAllowed("ADMINISTRADOR")
     public Response rechazar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
         Publicacion pub = publicacionService.rechazar(id, dto);
         return Response.ok(pub).build();
@@ -84,7 +89,49 @@ public class PublicacionResource {
 
     @GET
     @Path("/pendientes")
+    @RolesAllowed("ADMINISTRADOR")
     public Response pendientes() {
         return Response.ok(publicacionService.listarPendientes()).build();
+    }
+
+    @PUT
+    @Path("/{id}/cerrada")
+    public Response marcarCerrada(@PathParam("id") Long id, @Valid PublicacionCerradaDTO dto) {
+        publicacionService.marcarCerrada(id, dto);
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/aprobadas")
+    public List<PublicacionMapaDTO> aprobadas() {
+        return publicacionService.listarAprobadas();
+    }
+
+    @GET
+    @Path("/{id}/foto")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String foto(@PathParam("id") Long id) {
+        return publicacionService.fotoDe(id);
+    }
+        @GET
+    @Path("/resumen")
+    @RolesAllowed("ADMINISTRADOR")
+    public java.util.Map<String, Long> resumen() {
+        return publicacionService.resumen();
+    }
+
+    @PUT
+    @Path("/{id}/retirar")
+    @RolesAllowed("ADMINISTRADOR")
+    public Response retirar(@PathParam("id") Long id, @Valid PublicacionModeracionDTO dto) {
+        publicacionService.retirar(id, dto);
+        return Response.noContent().build();
+    }
+
+        @GET
+    @Path("/{id}/contacto")
+    @RolesAllowed({"PUBLICADOR", "ADMINISTRADOR"})
+    public java.util.Map<String, String> contacto(@PathParam("id") Long id) {
+        return publicacionService.contactoDe(id);
     }
 }
